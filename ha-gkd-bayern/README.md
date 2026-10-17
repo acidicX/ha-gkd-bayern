@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Example add-on
+# Gewässerkundlicher Dienst Bayern (Landesamt für Umwelt)
 
 _Example add-on to use as a blueprint for new add-ons._
 
