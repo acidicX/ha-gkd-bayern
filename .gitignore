@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Test / tooling caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# Virtualenvs
+venv/
+.venv/
+
+# Editors
+.idea/
+.vscode/
+
+# OS
+.DS_Store

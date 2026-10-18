@@ -1,44 +1,68 @@
-# Gewässerkundlicher Dienst Bayern (Landesamt für Umwelt)
+# GKD Bayern Wassertemperatur
 
-## Data license
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41CD52.svg)](https://github.com/hacs/integration)
 
-The data is provided under Creative Commons [Namensnennung 4.0 International Lizenz (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/deed.de)
+Shows the current water temperature of measurement stations of the
+[Gewässerkundlicher Dienst Bayern](https://www.gkd.bayern.de/de/fluesse/wassertemperatur/tabellen)
+(Landesamt für Umwelt, Bavaria) in [Home Assistant](https://www.home-assistant.io) sensors.
 
-<!-- This repository can be used as a "blueprint" for add-on development to help you get started.
+> ⚠️ This integration uses the public website of the GKD. The values update every
+> 15 minutes; the integration polls each configured station every 15 minutes and
+> only accepts measurements younger than **1 hour**. Older values mark the
+> sensor as _unavailable_, the last known value and measurement time stay in
+> the entity attributes.
 
-Add-on documentation: <https://developers.home-assistant.io/docs/add-ons> -->
+## Installation
 
-[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FacidicX%2Fha-gkd-bayern)
+### HACS (recommended)
 
-## Apps
+1. Make sure [HACS](https://hacs.xyz/) is installed.
+2. Add this repository as a **custom repository** of category _Integration_:
+   `https://github.com/acidicX/ha-gkd-bayern`
+3. Install _GKD Bayern Wassertemperatur_.
+4. Restart Home Assistant.
 
-This repository contains the following apps
+### Manual
 
-### [Gewässerkundlicher Dienst Bayern (Landesamt für Umwelt)](./ha-gkd-bayern)
+Copy the folder `custom_components/gkd_bayern` into the `custom_components`
+folder of your Home Assistant configuration and restart Home Assistant.
 
-![Supports aarch64 Architecture][aarch64-shield]
-![Supports amd64 Architecture][amd64-shield]
+## Configuration
 
-<!--
+1. In Home Assistant, go to _Settings → Devices & Services_ and click
+   **Add integration**, then choose **GKD Bayern Wassertemperatur**.
+2. Select one or more measurement stations. The list is fetched live from
+   gkd.bayern.de; every entry shows the station name and the river
+   (e.g. _Augsburg Hochablaß (Lech)_).
+3. The station list can be changed at any time via the options of the
+   integration (click _Configure_ on the integration card): each ID listed
+   there gets its own sensor and can be removed by deselecting it.
 
-Notes to developers after forking or using the github template feature:
-- While developing comment out the 'image' key from 'example/config.yaml' to make the supervisor build the app locally.
-  - Remember to put this back when pushing up your changes.
-- When you merge to the 'main' branch of your repository a new build will be triggered.
-  - Make sure you adjust the 'version' key in 'example/config.yaml' when you do that.
-  - Make sure you update 'example/CHANGELOG.md' when you do that.
-  - The first time this runs you might need to adjust the image configuration on github container registry to make it public.
-  - You may also need to adjust the GitHub Actions configuration (Settings > Actions > General > Workflow > Read & Write).
-- Update the repository check in '.github/workflows/build-app.yaml' to match your repository name
-  (the 'github.repository' condition in the 'prepare' job).
-- Adjust the 'image' key in 'example/config.yaml' so it points to your username instead of 'home-assistant'
-  (e.g., 'ghcr.io/my-username/my-app').
-- Rename the example directory.
-  - The 'slug' key in 'example/config.yaml' should match the directory name.
-- Adjust all keys/urls that point to 'home-assistant' to now point to your user/fork.
-- Share your repository on the forums https://community.home-assistant.io/c/projects/9
-- Do awesome stuff!
- -->
+## Sensors
 
-[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
-[amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
+Every configured station creates one temperature sensor, named like the
+station, grouped as a device per station. Entities provide these attributes:
+
+| Attribute          | Description                                                |
+| ------------------ | ---------------------------------------------------------- |
+| `station_id`       | 8-digit GKD measurement site ID (e.g. `12004002`)          |
+| `river`            | Gewässer (water body)                                      |
+| `district`         | Landkreis (district code)                                  |
+| `region`           | Region part of the GKD URL (e.g. `kelheim`)                |
+| `measured_at`      | Timestamp of the shown value (ISO 8601)                    |
+| `last_measured_at` | Time of the last accepted (≤1 h) value                     |
+| `last_value`       | Last accepted value, kept when the sensor goes unavailable |
+| `url`              | Source page of the data                                    |
+| `attribution`      | Data source attribution                                    |
+
+## License of the data
+
+The data originates from the _Gewässerkundlicher Dienst Bayern_ by the
+Bavarian Landesamt für Umwelt and is provided under the Creative Commons
+Attribution 4.0 International license [(CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/legalcode.en). For more information, see the https://www.gkd.bayern.de/de/impressum.
+
+## Troubleshooting
+
+- The website may temporarily reject unusual clients (robot protection).
+  If sensors stay _unavailable_, check the Home Assistant logs for
+  `gkd_bayern` errors; the integration retries on the next cycle.

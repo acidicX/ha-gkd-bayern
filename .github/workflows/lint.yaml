@@ -1,41 +1,26 @@
 name: Lint
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
   pull_request:
-    branches:
-      - main
-  schedule:
-    - cron: "0 0 * * *"
+  push:
+    branches: ["main"]
+
+permissions: {}
 
 jobs:
-  find:
-    name: Find apps
+  ruff:
+    name: Ruff
     runs-on: ubuntu-latest
-    outputs:
-      addons: ${{ steps.addons.outputs.addons_list }}
     steps:
-      - name: ⤵️ Check out code from GitHub
+      - name: Checkout code
         uses: actions/checkout@v7.0.1
-
-      - name: 🔍 Find app directories
-        id: addons
-        uses: home-assistant/actions/helpers/find-addons@master
-
-  lint:
-    name: Lint app ${{ matrix.path }}
-    runs-on: ubuntu-latest
-    needs: find
-    strategy:
-      matrix:
-        path: ${{ fromJson(needs.find.outputs.addons) }}
-    steps:
-      - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v7.0.1
-
-      - name: 🚀 Run Home Assistant App Lint
-        uses: frenck/action-addon-linter@v2.21
+      - name: Run ruff checks
+        uses: astral-sh/ruff-action@v4.1.0
         with:
-          path: "./${{ matrix.path }}"
+          version: latest
+      - name: Check formatting
+        uses: astral-sh/ruff-action@v4.1.0
+        with:
+          version: latest
+          args: "format --check"

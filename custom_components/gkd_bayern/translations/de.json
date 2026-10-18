@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "GKD Bayern Wassertemperatur",
+        "description": "Wähle die Messstellen, die auf https://www.gkd.bayern.de/de/fluesse/wassertemperatur/tabellen beobachtet werden sollen.",
+        "data": {
+          "selected": "Messstellen"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Die Messstellenliste konnte nicht von gkd.bayern.de geladen werden.",
+      "no_stations": "Wähle mindestens eine Messstelle."
+    },
+    "abort": {
+      "single_instance_allowed": "Bereits eingerichtet. Ändere die Messstellenliste über die Optionen der Integration."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "GKD Bayern Wassertemperatur",
+        "data": {
+          "selected": "Messstellen"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Die Messstellenliste konnte nicht von gkd.bayern.de geladen werden.",
+      "no_stations": "Wähle mindestens eine Messstelle."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "water_temperature": {
+        "name": "Wassertemperatur"
+      }
+    }
+  }
+}
