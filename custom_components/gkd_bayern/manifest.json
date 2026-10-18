@@ -4,9 +4,9 @@
   "codeowners": ["@acidicX"],
   "config_flow": true,
   "documentation": "https://github.com/acidicX/ha-gkd-bayern",
-  "integration_type": "sensor",
+  "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/acidicX/ha-gkd-bayern/issues",
-  "requirements": ["beautifulsoup4==4.13.4"],
+  "requirements": ["beautifulsoup4==4.13.3"],
   "version": "1.0.0"
 }

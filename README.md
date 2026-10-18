@@ -61,6 +61,19 @@ The data originates from the _Gewässerkundlicher Dienst Bayern_ by the
 Bavarian Landesamt für Umwelt and is provided under the Creative Commons
 Attribution 4.0 International license [(CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/legalcode.en). For more information, see the https://www.gkd.bayern.de/de/impressum.
 
+## Branding
+
+The integration is not yet listed in the
+[Home Assistant brands](https://github.com/home-assistant/brands)
+repository, so the HACS `brands` validation is skipped in CI (`ignore: brands`
+in `validate.yaml`). To fix properly:
+
+1. Run the [brands generation tool](https://brands.home-assistant.io/).
+2. Submit a pull request to `home-assistant/brands` adding
+   `data/custom_integrations/gkd_bayern.json` with the icon/logo/banner
+   assets.
+3. Once merged, remove `ignore: brands` from `.github/workflows/validate.yaml`.
+
 ## Troubleshooting
 
 - The website may temporarily reject unusual clients (robot protection).

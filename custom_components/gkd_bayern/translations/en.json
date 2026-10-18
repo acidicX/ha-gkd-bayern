@@ -3,12 +3,12 @@
     "step": {
       "user": {
         "title": "GKD Bayern Wassertemperatur",
-        "description": "Choose the measurement stations to observe on https://www.gkd.bayern.de/de/fluesse/wassertemperatur/tabellen.",
+        "description": "Choose the measurement stations to observe from the [GKD station list](%(station_list_url)s).",
         "data": { "selected": "Measurement stations" }
       }
     },
     "error": {
-      "cannot_connect": "Could not load the station list from gkd.bayern.de.",
+      "cannot_connect": "Could not load the station list.",
       "no_stations": "Select at least one measurement station."
     },
     "abort": {

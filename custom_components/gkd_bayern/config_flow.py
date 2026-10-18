@@ -12,7 +12,7 @@ import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 
 from .api import GkdApiClient, GkdError
-from .const import DOMAIN
+from .const import DOMAIN, TABLES_URL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -75,6 +75,7 @@ class GkdConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 step_id="user",
                 data_schema=vol.Schema({vol.Required("selected", default=[]): cv.multi_select({})}),
                 errors={"base": "cannot_connect"},
+                description_placeholders={"station_list_url": TABLES_URL},
             )
 
         return self.async_show_form(
@@ -83,6 +84,7 @@ class GkdConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 {vol.Required("selected", default=[]): cv.multi_select(_station_options(stations))}
             ),
             errors=errors,
+            description_placeholders={"station_list_url": TABLES_URL},
         )
 
 
