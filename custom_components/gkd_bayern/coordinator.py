@@ -20,6 +20,12 @@ from .api import (
 from .const import DOMAIN, UPDATE_INTERVAL
 from .data import Measurement, Station
 
+# When a station has no usable data (fetch error, unparsable page or stale
+# measurement), retry sooner than the normal cycle instead of waiting the
+# full update interval: back off 30 s, 60 s, 120 s, 240 s, 480 s, then cap
+# at the normal interval.
+RETRY_INTERVAL = timedelta(seconds=30)
+
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
 
@@ -35,6 +41,7 @@ class GkdDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Measurement | Non
         client: GkdApiClient,
         stations: dict[str, Station],
         update_interval: timedelta = UPDATE_INTERVAL,
+        config_entry: ConfigEntry | None = None,
     ) -> None:
         """Initialize the coordinator."""
         super().__init__(
@@ -42,6 +49,7 @@ class GkdDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Measurement | Non
             _LOGGER,
             name=DOMAIN,
             update_interval=update_interval,
+            config_entry=config_entry,
         )
         self._client = client
         self.stations = stations
@@ -51,6 +59,9 @@ class GkdDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Measurement | Non
         # Last known data situation per station, used to only log when it
         # changes ("fresh", "stale", "empty" or "error").
         self._situations: dict[str, str] = {}
+        # Number of consecutive update cycles in which at least one
+        # configured station had no usable data.
+        self._unhealthy_cycles = 0
 
     async def _async_update_data(self) -> dict[str, Measurement | None]:
         """Fetch the latest measurement for every station."""
@@ -65,14 +76,14 @@ class GkdDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Measurement | Non
                 self.last_raw[station_id] = None
                 data[station_id] = None
                 errors.append(station_id)
-                _announce(self._situations, station_id, "error", station)
+                _announce(self._situations, station_id, "error", station, 1)
                 continue
             self.last_raw[station_id] = measurement
             # A stale measurement (older than one hour) is not used as an
             # update: the sensor entity itself becomes unavailable.
             if measurement is None:
                 data[station_id] = None
-                _announce(self._situations, station_id, "empty", station)
+                _announce(self._situations, station_id, "empty", station, 1)
             elif is_fresh(measurement, now):
                 data[station_id] = measurement
                 _LOGGER.debug(
@@ -81,16 +92,49 @@ class GkdDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Measurement | Non
                     measurement.temperature,
                     measurement.measured_at.isoformat(),
                 )
-                _announce(self._situations, station_id, "fresh", station)
+                _announce(self._situations, station_id, "fresh", station, 0)
             else:
                 data[station_id] = None
-                _announce(self._situations, station_id, "stale", station)
+                _announce(self._situations, station_id, "stale", station, 1)
+        # Retry sooner while least one station has no usable data so a
+        # transient hiccup (e.g. at Home Assistant startup) recovers within
+        # seconds instead of waiting up to a full update interval.
+        unhealthy = bool(self.stations) and any(value is None for value in data.values())
+        if unhealthy:
+            self._unhealthy_cycles += 1
+            backoff = min(UPDATE_INTERVAL, RETRY_INTERVAL * 2 ** min(self._unhealthy_cycles - 1, 6))
+            self.update_interval = backoff
+            for station_id, station in self.stations.items():
+                if data[station_id] is None and self._unhealthy_cycles > 1:
+                    # After the first announcement, only repeat on cycles
+                    # divisible by 8 and visible escalation to not spam.
+                    _LOGGER.debug(
+                        "%s: still without usable data in update cycle %d",
+                        station.name,
+                        self._unhealthy_cycles,
+                    )
+                    if self._unhealthy_cycles % 8 == 0:
+                        _LOGGER.warning(
+                            "%s: still without usable data after %d update cycles; "
+                            "the sensor stays unavailable",
+                            station.name,
+                            self._unhealthy_cycles,
+                        )
+        else:
+            self._unhealthy_cycles = 0
+            self.update_interval = UPDATE_INTERVAL
         if self.stations and len(errors) == len(self.stations):
             raise UpdateFailed("All station requests failed")
         return data
 
 
-def _announce(situations: dict[str, str], station_id: str, state: str, station: Station) -> None:
+def _announce(
+    situations: dict[str, str],
+    station_id: str,
+    state: str,
+    station: Station,
+    cycles: int,
+) -> None:
     """Log when a station's data situation changes."""
     if situations.get(station_id) == state:
         return
@@ -121,6 +165,13 @@ async def create_coordinator(
     except GkdError as err:
         raise ConfigEntryNotReady(str(err)) from err
 
+    if not available:
+        _LOGGER.error(
+            "The GKD station overview contains no stations (the website may "
+            "have changed); retrying setup"
+        )
+        raise ConfigEntryNotReady("No stations found on the GKD website")
+
     configured_ids = _configured_ids(entry)
     stations: dict[str, Station] = {}
     for station_id in configured_ids:
@@ -132,7 +183,7 @@ async def create_coordinator(
             station_id,
             DOMAIN,
         )
-    return GkdDataUpdateCoordinator(hass, client, stations)
+    return GkdDataUpdateCoordinator(hass, client, stations, config_entry=entry)
 
 
 def _configured_ids(entry: ConfigEntry) -> list[str]:

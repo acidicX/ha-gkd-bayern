@@ -25,8 +25,17 @@ _REQUEST_HEADERS = {
 }
 
 # The bot protection serves reject pages with HTTP status 200, so the
-# content has to be inspected for its marker as well.
-_REJECTED_MARKER = "request rejected"
+# content has to be inspected for characteristic markers as well. A normal
+# GKD page never contains these.
+_REJECT_MARKERS = (
+    "request rejected",
+    "incapsula",
+    "_incapsula_resource",
+    "imperva",
+    "request unsuccessful",
+    "access denied",
+    "captcha",
+)
 
 _STATION_RE = re.compile(
     r"/de/fluesse/wassertemperatur/(?P<region>[a-z_]+)/"
@@ -64,8 +73,11 @@ class GkdApiClient:
                 text = await resp.text()
         except (TimeoutError, aiohttp.ClientError) as err:
             raise GkdConnectionError(f"Error fetching {url}: {err}") from err
-        if _REJECTED_MARKER in text.casefold():
-            raise GkdConnectionError(f"{url} was rejected by the website's bot protection")
+        low = text.casefold()
+        if matched := next((m for m in _REJECT_MARKERS if m in low), None):
+            raise GkdConnectionError(
+                f"{url} was rejected by the website's bot protection ({matched})"
+            )
         return text
 
     async def get_stations(self) -> dict[str, Station]:
