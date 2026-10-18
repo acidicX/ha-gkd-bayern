@@ -76,3 +76,23 @@ def test_available_reads_coordinator_success_flag() -> None:
     sensor = build_sensor(FakeCoordinator({STATION.id: MEASUREMENT}))
     assert not hasattr(sensor, "last_update_success")
     assert sensor.available is True
+
+
+def test_initializes_with_existing_coordinator_data() -> None:
+    """A sensor created after a successful refresh shows a value at once.
+
+    Regression guard: the value used to start as None and was only set by
+    the next coordinator update, so newly added stations appeared without
+    a state for up to one update interval.
+    """
+    sensor = build_sensor(FakeCoordinator({STATION.id: MEASUREMENT}))
+    assert sensor.native_value == 15.0
+    assert sensor.available is True
+    assert sensor._last_fresh is MEASUREMENT
+
+
+def test_initializes_without_data_is_unavailable() -> None:
+    """A sensor without data at creation time is unavailable, not unknown."""
+    sensor = build_sensor(FakeCoordinator({}))
+    assert sensor.native_value is None
+    assert sensor.available is False

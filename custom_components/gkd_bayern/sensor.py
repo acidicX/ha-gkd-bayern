@@ -60,8 +60,11 @@ class GkdWaterTemperatureSensor(GkdEntity, SensorEntity):
     def __init__(self, coordinator: GkdDataUpdateCoordinator, station: Station) -> None:
         """Initialize the sensor for a station."""
         super().__init__(coordinator, station, unique_id=f"{DOMAIN}_{station.id}")
-        self._attr_native_value: float | None = None
-        self._last_fresh: Measurement | None = None
+        # The coordinator's first refresh has already run when the sensor
+        # platform is set up, so seed the state from existing data instead
+        # of waiting for the next refresh cycle.
+        self._last_fresh: Measurement | None = coordinator.data.get(station.id)
+        self._attr_native_value: float | None = self._initial_value()
 
     @property
     def available(self) -> bool:
@@ -69,6 +72,15 @@ class GkdWaterTemperatureSensor(GkdEntity, SensorEntity):
         return self.coordinator.last_update_success and (
             self.coordinator.data.get(self.station_id) is not None
         )
+
+    def _initial_value(self) -> float | None:
+        """Evaluate the current value from coordinator data."""
+        measurement = self.coordinator.data.get(self.station_id)
+        if measurement is not None:
+            # The coordinator already filtered out stale (> 1 h) values.
+            self._last_fresh = measurement
+            return measurement.temperature
+        return None
 
     @property
     def extra_state_attributes(self) -> dict:
@@ -92,11 +104,5 @@ class GkdWaterTemperatureSensor(GkdEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle new measurement data."""
-        measurement = self.coordinator.data.get(self.station_id)
-        if measurement is not None:
-            # The coordinator already filters out stale (> 1 h) values.
-            self._attr_native_value = measurement.temperature
-            self._last_fresh = measurement
-        else:
-            self._attr_native_value = None
+        self._attr_native_value = self._initial_value()
         self.async_write_ha_state()
