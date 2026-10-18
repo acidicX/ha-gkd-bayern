@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/acidicX/ha-gkd-bayern/compare/v1.1.1...v1.1.2) (2026-10-18)
+
+
+### Bug Fixes
+
+* initialize after setup and add error logging ([4ba0fc0](https://github.com/acidicX/ha-gkd-bayern/commit/4ba0fc036e090485e34511933f94cc95fbb847a4))
+
 ## [1.1.1](https://github.com/acidicX/ha-gkd-bayern/compare/v1.1.0...v1.1.1) (2026-10-18)
 
 
