@@ -1,0 +1,65 @@
+# Dependabot configuration
+#
+# Strategy:
+# - One ecosystem block per tooling area of this repository
+#   (GitHub Actions workflows + Python test requirements).
+# - Weekly, fixed schedule (Monday morning, Europe/Berlin) instead of
+#   daily: predictable, low-noise cadence for a single-maintainer repo.
+# - Minor/patch updates are grouped into one PR per ecosystem to keep
+#   review load low; major updates always come as separate PRs so that
+#   breaking changes are never hidden in a batch.
+# - Conventional-commit style commit messages ("chore(deps):").
+# - `target: development` documents that the pip requirements are only
+#   used by tests/CI, not by the integration itself (the runtime
+#   dependency `beautifulsoup4` is declared and pinned in the HA
+#   integration manifest instead).
+#
+# Note: actions referenced by branch names (`hassfest@master`,
+# `hacs/action@main`) are intentionally not bumped by Dependabot, which
+# only updates semantic version tags.
+#
+# Docs: https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+
+version: 2
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:30"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      github-actions-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:30"
+      timezone: "Europe/Berlin"
+    target: "development"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      python-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
