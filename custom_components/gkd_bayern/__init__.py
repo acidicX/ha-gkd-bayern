@@ -1,4 +1,4 @@
-"""The GKD Bayern Wassertemperatur integration."""
+"""The GKD Bayern integration."""
 
 from __future__ import annotations
 

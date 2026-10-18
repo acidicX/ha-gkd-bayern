@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "GKD Bayern Wassertemperatur",
+        "title": "GKD Bayern",
         "description": "Wähle die Messstellen, die beobachtet werden sollen – Auswahl in der [GKD-Messstellenliste](%(station_list_url)s).",
         "data": {
           "selected": "Messstellen"
@@ -20,7 +20,7 @@
   "options": {
     "step": {
       "init": {
-        "title": "GKD Bayern Wassertemperatur",
+        "title": "GKD Bayern",
         "data": {
           "selected": "Messstellen"
         }

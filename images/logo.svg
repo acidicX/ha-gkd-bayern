@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img"
+  aria-labelledby="t">
+  <title id="t">GKD Bayern</title>
+  <defs>
+    <clipPath id="frame">
+      <rect x="14" y="14" width="484" height="484" rx="100" />
+    </clipPath>
+    <!-- Bavarian rauten (lozenges): checkerboard rotated 45°, stretched wide -->
+    <pattern id="rauten" width="124" height="124" patternUnits="userSpaceOnUse"
+      patternTransform="scale(1.55 1) rotate(45)">
+      <rect width="124" height="124" fill="#ffffff" />
+      <rect x="0" y="0" width="62" height="62" fill="#8fc8e8" />
+      <rect x="62" y="62" width="62" height="62" fill="#8fc8e8" />
+    </pattern>
+    <linearGradient id="trib" gradientUnits="userSpaceOnUse" x1="128" y1="576" x2="225" y2="255">
+      <stop offset="0" stop-color="#2b86bf"/>
+      <stop offset="1" stop-color="#0a4c7e"/>
+    </linearGradient>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect x="14" y="14" width="484" height="484" fill="url(#rauten)" />
+
+    <!-- meandering river (trunk) and one tributary -->
+    <g fill="none" stroke-linecap="round">
+      <!-- soft shadow for depth -->
+      <g transform="translate(0,6)" stroke="#05203a" stroke-opacity="0.18">
+        <path d="M 128 576 C 116 520 158 500 162 452 C 166 408 118 400 122 356
+                 C 128 312 176 320 182 282 C 187 252 214 262 225 255" stroke-width="36" />
+        <path
+          d="M -64 170 C 40 150, 70 110, 130 130 C 195 152, 190 260, 258 276
+                 C 330 293, 330 180, 402 174 C 480 168, 508 240, 572 262"
+          stroke-width="66" />
+      </g>
+      <!-- main river casing, then tributary casing -->
+      <path
+        d="M -64 170 C 40 150, 70 110, 130 130 C 195 152, 190 260, 258 276
+               C 330 293, 330 180, 402 174 C 480 168, 508 240, 572 262"
+        stroke="#ffffff" stroke-width="58" />
+      <path d="M 128 576 C 116 520 158 500 162 452 C 166 408 118 400 122 356
+               C 128 312 176 320 182 282 C 187 252 214 262 225 255" stroke="#ffffff" stroke-width="30" />
+      <!-- main river water -->
+      <path
+        d="M -64 170 C 40 150, 70 110, 130 130 C 195 152, 190 260, 258 276
+               C 330 293, 330 180, 402 174 C 480 168, 508 240, 572 262"
+        stroke="#0a4c7e" stroke-width="44" />
+      <!-- tributary water on top, dark tip so it flows into the main river -->
+      <path d="M 128 576 C 116 520 158 500 162 452 C 166 408 118 400 122 356
+               C 128 312 176 320 182 282 C 187 252 214 262 225 255" stroke="url(#trib)" stroke-width="18" />
+    </g>
+
+    <!-- measuring stations -->
+    <g stroke="#0a4c7e" stroke-width="6" fill="#ffffff">
+      <circle cx="130" cy="131" r="12" />
+      <circle cx="258" cy="276" r="12" />
+      <circle cx="402" cy="174" r="12" />
+    </g>
+  </g>
+
+  <!-- frame -->
+  <rect x="12" y="12" width="488" height="488" rx="104" fill="none" stroke="#0a4c7e"
+    stroke-width="9" />
+</svg>

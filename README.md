@@ -1,10 +1,16 @@
-# GKD Bayern Wassertemperatur
+# GKD Bayern
+
+<a href="https://github.com/acidicX/ha-gkd-bayern">
+  <img src="images/logo.svg" alt="GKD Bayern integration logo" width="128" align="right" />
+</a>
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41CD52.svg)](https://github.com/hacs/integration)
 
-Shows the current water temperature of measurement stations of the
-[Gewässerkundlicher Dienst Bayern](https://www.gkd.bayern.de/de/fluesse/wassertemperatur/tabellen)
+Shows the current water measurement stations of the
+[Gewässerkundlicher Dienst Bayern](https://www.gkd.bayern.de/de/fluesse)
 (Landesamt für Umwelt, Bavaria) in [Home Assistant](https://www.home-assistant.io) sensors.
+
+Currently, only **water temperature** measurement is supported.
 
 > ⚠️ This integration uses the public website of the GKD. The values update every
 > 15 minutes; the integration polls each configured station every 15 minutes and
@@ -19,7 +25,7 @@ Shows the current water temperature of measurement stations of the
 1. Make sure [HACS](https://hacs.xyz/) is installed.
 2. Add this repository as a **custom repository** of category _Integration_:
    `https://github.com/acidicX/ha-gkd-bayern`
-3. Install _GKD Bayern Wassertemperatur_.
+3. Install _GKD Bayern_.
 4. Restart Home Assistant.
 
 ### Manual
@@ -30,7 +36,7 @@ folder of your Home Assistant configuration and restart Home Assistant.
 ## Configuration
 
 1. In Home Assistant, go to _Settings → Devices & Services_ and click
-   **Add integration**, then choose **GKD Bayern Wassertemperatur**.
+   **Add integration**, then choose **GKD Bayern**.
 2. Select one or more measurement stations. The list is fetched live from
    gkd.bayern.de; every entry shows the station name and the river
    (e.g. _Augsburg Hochablaß (Lech)_).
@@ -63,16 +69,18 @@ Attribution 4.0 International license [(CC BY 4.0)](https://creativecommons.org/
 
 ## Branding
 
-The integration is not yet listed in the
-[Home Assistant brands](https://github.com/home-assistant/brands)
-repository, so the HACS `brands` validation is skipped in CI (`ignore: brands`
-in `validate.yaml`). To fix properly:
+Since Home Assistant 2026.3, custom integrations ship their brand images in a
+`brand/` folder inside the integration directory — no separate
+[brands repository](https://github.com/home-assistant/brands) pull request is
+needed. This integration provides:
 
-1. Run the [brands generation tool](https://brands.home-assistant.io/).
-2. Submit a pull request to `home-assistant/brands` adding
-   `data/custom_integrations/gkd_bayern.json` with the icon/logo/banner
-   assets.
-3. Once merged, remove `ignore: brands` from `.github/workflows/validate.yaml`.
+    custom_components/gkd_bayern/brand/icon.png     (256x256)
+    custom_components/gkd_bayern/brand/icon@2x.png  (512x512, hDPI)
+
+Home Assistant uses these as the integration logo automatically; HACS serves
+them via the Marketplace brands proxy. The images are generated from
+`images/logo.svg` (`rsvg-convert` + trim/optipng). Because the logo is square,
+the icon is also used as the logo (per the brands image specification).
 
 ## Troubleshooting
 

@@ -2,9 +2,11 @@
   "config": {
     "step": {
       "user": {
-        "title": "GKD Bayern Wassertemperatur",
+        "title": "GKD Bayern",
         "description": "Choose the measurement stations to observe from the [GKD station list](%(station_list_url)s).",
-        "data": { "selected": "Measurement stations" }
+        "data": {
+          "selected": "Measurement stations"
+        }
       }
     },
     "error": {
@@ -18,8 +20,10 @@
   "options": {
     "step": {
       "init": {
-        "title": "GKD Bayern Wassertemperatur",
-        "data": { "selected": "Measurement stations" }
+        "title": "GKD Bayern",
+        "data": {
+          "selected": "Measurement stations"
+        }
       }
     },
     "error": {
@@ -29,7 +33,9 @@
   },
   "entity": {
     "sensor": {
-      "water_temperature": { "name": "Water temperature" }
+      "water_temperature": {
+        "name": "Water temperature"
+      }
     }
   }
 }

@@ -7,7 +7,7 @@
       "release-type": "python",
       "extra-files": [
         {
-          "type": "generic",
+          "type": "json",
           "path": "custom_components/gkd_bayern/manifest.json",
           "jsonpath": "$.version"
         }

@@ -63,7 +63,7 @@ class GkdConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 else:
                     stations_map = {sid: stations[sid] for sid in selected}
                     return self.async_create_entry(
-                        title="GKD Bayern Wassertemperatur",
+                        title="GKD Bayern",
                         data={"stations": stations_map},
                     )
 

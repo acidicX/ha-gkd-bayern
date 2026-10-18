@@ -1,10 +1,10 @@
-"""Constants for the GKD Bayern Wassertemperatur integration."""
+"""Constants for the GKD Bayern integration."""
 
 from datetime import timedelta
 
 DOMAIN = "gkd_bayern"
 MANUFACTURER = "Gewässerkundlicher Dienst Bayern (LfU)"
-NAME = "GKD Bayern Wassertemperatur"
+NAME = "GKD Bayern"
 
 CONF_STATIONS = "stations"
 ATTR_STATION_ID = "station_id"
