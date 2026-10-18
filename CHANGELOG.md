@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/acidicX/ha-gkd-bayern/compare/v1.1.0...v1.1.1) (2026-10-18)
+
+
+### Bug Fixes
+
+* use correct API ([4d3520d](https://github.com/acidicX/ha-gkd-bayern/commit/4d3520d6c9a5eb9f54864e2eb6509cbd98a02ccd))
+
 ## [1.1.0](https://github.com/acidicX/ha-gkd-bayern/compare/v1.0.0...v1.1.0) (2026-10-18)
 
 
