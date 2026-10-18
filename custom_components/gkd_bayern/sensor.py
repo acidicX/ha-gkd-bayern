@@ -66,7 +66,9 @@ class GkdWaterTemperatureSensor(GkdEntity, SensorEntity):
     @property
     def available(self) -> bool:
         """Stale or failed data makes the sensor unavailable."""
-        return self.last_update_success and (self.coordinator.data.get(self.station_id) is not None)
+        return self.coordinator.last_update_success and (
+            self.coordinator.data.get(self.station_id) is not None
+        )
 
     @property
     def extra_state_attributes(self) -> dict:
