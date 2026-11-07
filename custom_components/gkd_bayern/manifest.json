@@ -5,6 +5,10 @@
     "@acidicX"
   ],
   "config_flow": true,
+  "categories": [
+    "water",
+    "local_services"
+  ],
   "documentation": "https://github.com/acidicX/ha-gkd-bayern",
   "integration_type": "hub",
   "iot_class": "cloud_polling",
