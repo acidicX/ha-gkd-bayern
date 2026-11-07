@@ -50,7 +50,6 @@ updates:
       day: "monday"
       time: "05:30"
       timezone: "Europe/Berlin"
-    target: "development"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
