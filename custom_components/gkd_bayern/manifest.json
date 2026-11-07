@@ -1,18 +1,18 @@
 {
-  "domain": "gkd_bayern",
-  "name": "GKD Bayern",
-  "codeowners": [
-    "@acidicX"
-  ],
-  "config_flow": true,
   "categories": [
     "water",
     "local_services"
   ],
+  "codeowners": [
+    "@acidicX"
+  ],
+  "config_flow": true,
   "documentation": "https://github.com/acidicX/ha-gkd-bayern",
+  "domain": "gkd_bayern",
   "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/acidicX/ha-gkd-bayern/issues",
+  "name": "GKD Bayern",
   "requirements": [
     "beautifulsoup4>=4.13.3"
   ],
