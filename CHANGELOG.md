@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/acidicX/ha-gkd-bayern/compare/v1.2.2...v1.2.3) (2026-11-09)
+
+
+### Bug Fixes
+
+* remove stations by deselection; move parsing off hass main loop ([e2fda6b](https://github.com/acidicX/ha-gkd-bayern/commit/e2fda6b1766583061c33c519e07d1574e364b448))
+
 ## [1.2.2](https://github.com/acidicX/ha-gkd-bayern/compare/v1.2.1...v1.2.2) (2026-11-07)
 
 
