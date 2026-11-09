@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 import logging
-from typing import TYPE_CHECKING
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -17,6 +18,7 @@ from .api import (
     is_fresh,
     now_berlin,
 )
+from .config import configured_ids, stations_map
 from .const import DOMAIN, UPDATE_INTERVAL
 from .data import Measurement, Station
 
@@ -25,11 +27,13 @@ from .data import Measurement, Station
 # full update interval: back off 30 s, 60 s, 120 s, 240 s, 480 s, then cap
 # at the normal interval.
 RETRY_INTERVAL = timedelta(seconds=30)
-
-if TYPE_CHECKING:
-    from homeassistant.config_entries import ConfigEntry
+# Limit parallel requests so a large station selection does not hammer the
+# GKD website while still avoiding a serial fetch of every station.
+MAX_CONCURRENT_REQUESTS = 5
 
 _LOGGER = logging.getLogger(__name__)
+
+type GkdBayernConfigEntry = ConfigEntry[GkdDataUpdateCoordinator]
 
 
 class GkdDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Measurement | None]]):
@@ -41,7 +45,7 @@ class GkdDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Measurement | Non
         client: GkdApiClient,
         stations: dict[str, Station],
         update_interval: timedelta = UPDATE_INTERVAL,
-        config_entry: ConfigEntry | None = None,
+        config_entry: GkdBayernConfigEntry | None = None,
     ) -> None:
         """Initialize the coordinator."""
         super().__init__(
@@ -68,11 +72,24 @@ class GkdDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Measurement | Non
         now = now_berlin()
         data: dict[str, Measurement | None] = {}
         errors: list[str] = []
-        for station_id, station in self.stations.items():
-            try:
-                measurement = await self._client.get_measurement(station.url)
-            except GkdConnectionError as err:
-                _LOGGER.warning("Could not update %s: %s", station.name, err)
+        semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+
+        async def fetch(
+            station_id: str, station: Station
+        ) -> tuple[str, Station, Measurement | None, GkdConnectionError | None]:
+            async with semaphore:
+                try:
+                    measurement = await self._client.get_measurement(station.url)
+                except GkdConnectionError as err:
+                    return station_id, station, None, err
+                return station_id, station, measurement, None
+
+        results = await asyncio.gather(
+            *(fetch(station_id, station) for station_id, station in self.stations.items())
+        )
+        for station_id, station, measurement, error in results:
+            if error is not None:
+                _LOGGER.warning("Could not update %s: %s", station.name, error)
                 self.last_raw[station_id] = None
                 data[station_id] = None
                 errors.append(station_id)
@@ -157,7 +174,7 @@ def _announce(
 
 
 async def create_coordinator(
-    hass: HomeAssistant, entry: ConfigEntry, client: GkdApiClient
+    hass: HomeAssistant, entry: GkdBayernConfigEntry, client: GkdApiClient
 ) -> GkdDataUpdateCoordinator:
     """Build the coordinator for the configured stations of ``entry``."""
     try:
@@ -172,9 +189,8 @@ async def create_coordinator(
         )
         raise ConfigEntryNotReady("No stations found on the GKD website")
 
-    configured_ids = _configured_ids(entry)
     stations: dict[str, Station] = {}
-    for station_id in configured_ids:
+    for station_id in configured_ids(entry):
         if (station := available.get(station_id)) is not None:
             stations[station_id] = station
             continue
@@ -188,11 +204,9 @@ async def create_coordinator(
 
 def _configured_ids(entry: ConfigEntry) -> list[str]:
     """Return configured station IDs from entry options or data."""
-    return list(_stations_map(entry))
+    return configured_ids(entry)
 
 
 def _stations_map(entry: ConfigEntry) -> dict[str, dict[str, str]]:
-    """Return the raw configured station mapping (options preferred)."""
-    merged = dict(entry.data.get("stations") or {})
-    merged.update(entry.options.get("stations") or {})
-    return merged
+    """Return the configured station mapping, preferring the options value."""
+    return stations_map(entry)

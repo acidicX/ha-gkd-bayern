@@ -11,7 +11,8 @@
     },
     "error": {
       "cannot_connect": "Die Messstellenliste konnte nicht geladen werden.",
-      "no_stations": "Wähle mindestens eine Messstelle."
+      "no_stations": "Wähle mindestens eine Messstelle.",
+      "station_not_found": "Einige ausgewählte Messstellen sind nicht mehr verfügbar. Bitte aktualisiere deine Auswahl."
     },
     "abort": {
       "single_instance_allowed": "Bereits eingerichtet. Ändere die Messstellenliste über die Optionen der Integration."
@@ -28,7 +29,8 @@
     },
     "error": {
       "cannot_connect": "Die Messstellenliste konnte nicht von gkd.bayern.de geladen werden.",
-      "no_stations": "Wähle mindestens eine Messstelle."
+      "no_stations": "Wähle mindestens eine Messstelle.",
+      "station_not_found": "Einige ausgewählte Messstellen sind nicht mehr verfügbar. Bitte aktualisiere deine Auswahl."
     }
   },
   "entity": {

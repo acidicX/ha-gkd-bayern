@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 import re
+from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
 import aiohttp
@@ -11,6 +12,9 @@ from bs4 import BeautifulSoup
 
 from .const import MAX_AGE, TABLES_URL, TIMEZONE
 from .data import Measurement, Station
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 # The GKD website rejects unknown user agents, so mimic a browser.
 USER_AGENT = (
@@ -23,6 +27,7 @@ _REQUEST_HEADERS = {
     "Accept": "text/html",
     "Accept-Language": "de-DE,de;q=0.9",
 }
+_REQUEST_TIMEOUT = aiohttp.ClientTimeout(total=30)
 
 # The bot protection serves reject pages with HTTP status 200, so the
 # content has to be inspected for characteristic markers as well. A normal
@@ -61,14 +66,17 @@ class GkdParseError(GkdError):
 class GkdApiClient:
     """Access the GKD Bayern website for station lists and measurements."""
 
-    def __init__(self, session) -> None:
-        """Initialize with an aiohttp ClientSession."""
+    def __init__(self, hass: HomeAssistant, session) -> None:
+        """Initialize with Home Assistant and an aiohttp ClientSession."""
+        self._hass = hass
         self._session = session
 
     async def _get(self, url: str) -> str:
         """Fetch a page and return its text."""
         try:
-            async with self._session.get(url, headers=_REQUEST_HEADERS) as resp:
+            async with self._session.get(
+                url, headers=_REQUEST_HEADERS, timeout=_REQUEST_TIMEOUT
+            ) as resp:
                 resp.raise_for_status()
                 text = await resp.text()
         except (TimeoutError, aiohttp.ClientError) as err:
@@ -82,7 +90,8 @@ class GkdApiClient:
 
     async def get_stations(self) -> dict[str, Station]:
         """Return all available stations keyed by their ID."""
-        return parse_stations(await self._get(TABLES_URL))
+        html = await self._get(TABLES_URL)
+        return await self._hass.async_add_executor_job(parse_stations, html)
 
     async def get_measurement(self, url: str) -> Measurement | None:
         """Fetch the newest measurement row from a station values page.
@@ -90,7 +99,8 @@ class GkdApiClient:
         Returns None if no parseable row was found. Freshness is checked
         by the caller.
         """
-        return parse_measurement(await self._get(url))
+        html = await self._get(url)
+        return await self._hass.async_add_executor_job(parse_measurement, html)
 
 
 def parse_stations(html: str) -> dict[str, Station]:

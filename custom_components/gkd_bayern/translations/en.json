@@ -11,7 +11,8 @@
     },
     "error": {
       "cannot_connect": "Could not load the station list.",
-      "no_stations": "Select at least one measurement station."
+      "no_stations": "Select at least one measurement station.",
+      "station_not_found": "Some selected stations are no longer available. Please update your selection."
     },
     "abort": {
       "single_instance_allowed": "Already configured. Use the options of the integration to change the station list."
@@ -28,7 +29,8 @@
     },
     "error": {
       "cannot_connect": "Could not load the station list from gkd.bayern.de.",
-      "no_stations": "Select at least one measurement station."
+      "no_stations": "Select at least one measurement station.",
+      "station_not_found": "Some selected stations are no longer available. Please update your selection."
     }
   },
   "entity": {

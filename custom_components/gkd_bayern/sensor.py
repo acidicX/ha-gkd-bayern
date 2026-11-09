@@ -29,20 +29,19 @@ from .const import (
 from .entity import GkdEntity
 
 if TYPE_CHECKING:
-    from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
-    from .coordinator import GkdDataUpdateCoordinator
+    from .coordinator import GkdBayernConfigEntry, GkdDataUpdateCoordinator
     from .data import Measurement, Station
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: GkdBayernConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up a sensor per configured station."""
-    coordinator: GkdDataUpdateCoordinator = entry.runtime_data
+    coordinator = entry.runtime_data
     async_add_entities(
         GkdWaterTemperatureSensor(coordinator, station) for station in coordinator.stations.values()
     )
