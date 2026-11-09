@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/acidicX/ha-gkd-bayern/compare/v1.2.3...v1.2.4) (2026-11-09)
+
+
+### Bug Fixes
+
+* show list sorted alphabetically and make it searchable ([f7c9dc2](https://github.com/acidicX/ha-gkd-bayern/commit/f7c9dc2f0c36f15bd928406d3c855b38aad10bf2))
+
 ## [1.2.3](https://github.com/acidicX/ha-gkd-bayern/compare/v1.2.2...v1.2.3) (2026-11-09)
 
 
