@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "GKD Bayern",
-        "description": "Choose the measurement stations to observe from the [GKD station list](%(station_list_url)s).",
+        "description": "Choose the measurement stations to observe from the [GKD station list]({station_list_url}).",
         "data": {
           "selected": "Measurement stations"
         }

@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "GKD Bayern",
-        "description": "Wähle die Messstellen, die beobachtet werden sollen – Auswahl in der [GKD-Messstellenliste](%(station_list_url)s).",
+        "description": "Wähle die Messstellen, die beobachtet werden sollen – Auswahl in der [GKD-Messstellenliste]({station_list_url}).",
         "data": {
           "selected": "Messstellen"
         }
