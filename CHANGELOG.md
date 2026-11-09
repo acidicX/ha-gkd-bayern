@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.5](https://github.com/acidicX/ha-gkd-bayern/compare/v1.2.4...v1.2.5) (2026-11-09)
+
+
+### Bug Fixes
+
+* render station links correctly ([5437445](https://github.com/acidicX/ha-gkd-bayern/commit/5437445557a58c905ed1699fb69d7c045043fbf5))
+
+
+### Documentation
+
+* improve README ([7491ef5](https://github.com/acidicX/ha-gkd-bayern/commit/7491ef52d4f4eaae1080cc5f9269ed178165d109))
+* use correct repo link ([81daff8](https://github.com/acidicX/ha-gkd-bayern/commit/81daff8cd689296d03de55d3c9b860ff79e7a2e3))
+
 ## [1.2.4](https://github.com/acidicX/ha-gkd-bayern/compare/v1.2.3...v1.2.4) (2026-11-09)
 
 
