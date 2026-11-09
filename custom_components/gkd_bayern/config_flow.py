@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, override
 
 from homeassistant import config_entries
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 
 from .api import GkdApiClient, GkdError
@@ -28,13 +28,37 @@ async def _fetch_stations(hass: HomeAssistant) -> dict[str, dict[str, str]]:
 def _station_options(stations: dict[str, dict[str, str]]) -> dict[str, str]:
     """Return selectable options sorted by station name."""
     options = {sid: f"{station['name']} ({station['river']})" for sid, station in stations.items()}
-    return dict(sorted(options.items(), key=lambda item: item[1].lower()))
+    return dict(sorted(options.items(), key=lambda item: item[1].casefold()))
+
+
+def _station_selector(options: dict[str, str]) -> selector.SelectSelector:
+    """Return a searchable, alphabetically sorted station selector."""
+    return selector.SelectSelector(
+        selector.SelectSelectorConfig(
+            options=[
+                selector.SelectOptionDict(value=station_id, label=label)
+                for station_id, label in options.items()
+            ],
+            mode=selector.SelectSelectorMode.DROPDOWN,
+            multiple=True,
+            sort=True,
+        )
+    )
 
 
 class GkdConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle the GKD Bayern config flow."""
 
     VERSION = 2
+
+    @staticmethod
+    @callback
+    @override
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> GkdOptionsFlow:
+        """Return the options flow for this config entry."""
+        return GkdOptionsFlow()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -51,7 +75,9 @@ class GkdConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.debug("Could not load the station list: %s", err)
             return self.async_show_form(
                 step_id="user",
-                data_schema=vol.Schema({vol.Required("selected", default=[]): cv.multi_select({})}),
+                data_schema=vol.Schema(
+                    {vol.Required("selected", default=[]): _station_selector({})}
+                ),
                 errors={"base": "cannot_connect"},
                 description_placeholders={"station_list_url": TABLES_URL},
             )
@@ -73,7 +99,11 @@ class GkdConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
-                {vol.Required("selected", default=[]): cv.multi_select(_station_options(stations))}
+                {
+                    vol.Required("selected", default=[]): _station_selector(
+                        _station_options(stations)
+                    )
+                }
             ),
             errors=errors,
             description_placeholders={"station_list_url": TABLES_URL},
@@ -100,13 +130,13 @@ class GkdOptionsFlow(config_entries.OptionsFlow):
             return self.async_show_form(
                 step_id="init",
                 data_schema=vol.Schema(
-                    {vol.Required("selected", default=list(current)): cv.multi_select(labels)}
+                    {vol.Required("selected", default=list(current)): _station_selector(labels)}
                 ),
                 errors={"base": "cannot_connect"},
             )
 
         labels.update(_station_options(available))
-        labels = dict(sorted(labels.items(), key=lambda item: item[1].lower()))
+        labels = dict(sorted(labels.items(), key=lambda item: item[1].casefold()))
 
         errors: dict[str, str] = {}
         if user_input is not None:
@@ -129,7 +159,7 @@ class GkdOptionsFlow(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(
-                {vol.Required("selected", default=list(current)): cv.multi_select(labels)}
+                {vol.Required("selected", default=list(current)): _station_selector(labels)}
             ),
             errors=errors,
         )
