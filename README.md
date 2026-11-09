@@ -4,7 +4,7 @@
   <img src="images/logo.svg" alt="GKD Bayern integration logo" width="128" align="right" />
 </a>
 
-[![Open your Home Assistant instance and open a repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=acidicX&repository=https%3A%2F%2Fgithub.com%2FacidicX%2Fha-gkd-bayern)
+[![Open your Home Assistant instance and open a repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=acidicX&repository=ha-gkd-bayern)
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41CD52.svg)](https://github.com/hacs/integration)
 
