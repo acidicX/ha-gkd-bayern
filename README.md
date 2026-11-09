@@ -22,9 +22,15 @@ Currently, only **water temperature** measurement is supported.
 
 ## Installation
 
-### HACS (recommended)
+### HACS / Marketplace (recommended)
 
-1. Make sure [HACS](https://hacs.xyz/) is installed.
+1. Make sure [HACS](https://hacs.xyz/) is installed or the Marketplace is available.
+2. Search for _GKD Bayern_ and install it, or use the link above.
+3. Restart Home Assistant.
+
+### HACS / Marketplace as custom repository
+
+1. Make sure [HACS](https://hacs.xyz/) is installed or the Marketplace is available.
 2. Add this repository as a **custom repository** of category _Integration_:
    `https://github.com/acidicX/ha-gkd-bayern`
 3. Install _GKD Bayern_.
